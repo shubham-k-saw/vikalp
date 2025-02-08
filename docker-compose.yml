@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - '${FRONTEND_PORT}:5173'
+    depends_on:
+      - backend
+    environment:
+      - VITE_SERVER_URL=http://localhost:${BACKEND_PORT}
+    networks:
+      - app_network
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - '${BACKEND_PORT}:5000'
+    depends_on:
+      - postgres
+      - redis
+      - mongo
+    environment:
+      - POSTGRES_URI=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - REDIS_URI=redis://redis:6379
+      - MONGO_URI=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/${MONGO_INITDB_DATABASE}?authSource=admin
+      - CLIENT_URL=http://localhost:${FRONTEND_PORT}
+    networks:
+      - app_network
+
+  postgres:
+    image: postgres:16
+    restart: always
+    ports:
+      - '${POSTGRES_PORT}:5432'
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  redis:
+    image: redis:7
+    restart: always
+    ports:
+      - '${REDIS_PORT}:6379'
+    networks:
+      - app_network
+
+  mongo:
+    image: mongo:7
+    restart: always
+    ports:
+      - '${MONGO_PORT}:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app_network
+
+volumes:
+  postgres_data:
+  mongo_data:
+
+networks:
+  app_network:
+    driver: bridge

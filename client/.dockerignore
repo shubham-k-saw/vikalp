@@ -1,0 +1,45 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Logs
+logs/
+*.log
+
+# Build output
+dist/
+build/
+.vitepress/dist
+.vitepress/cache
+
+# Dependency lock files (optional)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Environment variables
+.env
+.env.example
+.env.local
+.env.*.local
+
+# Docker artifacts
+Dockerfile
+.dockerignore
+
+# Git files
+.git/
+.gitignore
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS-specific files
+.DS_Store
+Thumbs.db
